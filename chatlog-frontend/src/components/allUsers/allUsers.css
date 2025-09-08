@@ -1,0 +1,98 @@
+ /* .btn {
+            display: flex;
+            position: relative;
+            top: -3.5rem;
+            left: 15rem;
+            width: 38%;
+            justify-content: space-between;
+        } */
+
+ .connect-btn {
+     background-color: cadetblue;
+     font-size: 1.3rem;
+     padding: 0.3rem;
+     font-weight: bold;
+     border-radius: 1rem;
+     width: 7rem;
+     cursor: pointer;
+ }
+
+ .connect-btn:active {
+     transform: translateY(2px);
+ }
+
+ .accpet-btn {
+     background-color: #17aa17;
+     font-size: 1.3rem;
+     padding: 0.3rem;
+     font-weight: bold;
+     border-radius: 1rem;
+     width: 7rem;
+     cursor: pointer;
+ }
+
+ .accpet-btn:active {
+     transform: translateY(2px);
+ }
+
+ #search {
+     color: white;
+     width: 98%;
+     height: 2.1rem;
+     border-radius: 1rem;
+     background: #a9a9a945;
+     margin: 20px 0px 20px 4px;
+     padding: 1rem;
+     font-size: 1rem;
+ }
+
+ .req-sent-btn {
+     border: none;
+     background-color: #808080ab;
+     font-size: 1.3rem;
+     padding: 0.3rem;
+     font-weight: bold;
+     border-radius: 1rem;
+     width: 7rem;
+ }
+
+ .cancel {
+     color: red;
+     font-size: 2.3rem;
+     cursor: pointer;
+ }
+
+ .cancel:active {
+     transform: translateY(2px);
+ }
+
+ .friends {
+     background-color: #808080ab;
+     font-size: 1.3rem;
+     padding: 0.3rem;
+     font-weight: bold;
+     border-radius: 1rem;
+     width: 6.4rem;
+     text-align: center;
+     cursor: context-menu;
+ }
+
+ /* .user-container {
+            height: 5.7rem;
+        } */
+ .user-list {
+     height: 89vh !important;
+     overflow-y: auto;
+     scrollbar-width: none;
+     -ms-overflow-style: none;
+ }
+
+ @media screen and (max-width: 500px) {
+     .user-list {
+         height: 68vh !important;
+     }
+
+     #search {
+         margin: 31px 0px 20px 4px;
+     }
+ }

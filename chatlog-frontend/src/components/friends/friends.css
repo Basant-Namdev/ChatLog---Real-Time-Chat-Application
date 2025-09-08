@@ -1,0 +1,98 @@
+/* .btn {
+            display: flex;
+            position: relative;
+            top: -3.5rem;
+            left: 15rem;
+            width: 38%;
+            justify-content: space-between;
+        } */
+::-webkit-scrollbar {
+  display: none;
+}
+
+        .accpet-btn {
+            background-color: #17aa17;
+            font-size: 1.3rem;
+            padding: 0.3rem;
+            font-weight: bold;
+            border-radius: 1rem;
+            width: 7rem;
+            cursor: pointer;
+        }
+
+        .accpet-btn:active {
+            transform: translateY(2px);
+        }
+
+        #search {
+            color: white;
+            width: 98%;
+            height: 2.1rem;
+            border-radius: 1rem;
+            background: #a9a9a945;
+            margin: 20px 0px 20px 4px;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        .cancel {
+            color: red;
+            font-size: 2.3rem;
+            cursor: pointer;
+        }
+
+        .cancel:active {
+            transform: translateY(2px);
+        }
+
+        .message-opt {
+            background-color: #808080ab;
+            font-size: 1.2rem;
+            padding: 0.4rem;
+            font-weight: bold;
+            border-radius: 1rem;
+            cursor: pointer;
+        }
+
+        /* .user-req-container,
+            .user-container {
+                height: 5.7rem;
+            } */
+
+        #friendReq {
+            box-shadow: 0px 0px 2px white;
+            margin-bottom: 0.8rem;
+            background: #c0c0c066;
+        }
+
+        .arrow {
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .arrow:first-child {
+            display: none;
+        }
+
+        .friends-count {
+            display: inline-block;
+            text-align: center;
+            color: white;
+            background-color: red;
+            width: 1.7rem;
+            border-radius: 50%;
+            padding: .3rem;
+            height: 1.7rem;
+            line-height: 12px;
+        }
+
+        .user-list {
+            height: 82vh !important;
+        }
+
+        @media screen and (max-width: 500px) {
+            .user-list {
+                height: 60.6vh !important;
+            }
+        }

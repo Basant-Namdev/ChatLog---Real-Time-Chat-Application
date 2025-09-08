@@ -1,0 +1,29 @@
+#search {
+  color: white;
+  width: 98%;
+  height: 2.1rem;
+  border-radius: 1rem;
+  background: #a9a9a945;
+  margin: 20px 0px 20px 4px;
+  padding: 1rem;
+  font-size: 1rem;
+}
+
+.message-opt {
+  background-color: #808080ab;
+  font-size: 1.2rem;
+  padding: 0.4rem;
+  font-weight: bold;
+  border-radius: 1rem;
+  cursor: pointer;
+}
+
+.user-list {
+  height: 85vh;
+}
+
+@media screen and (max-width: 500px) {
+  .user-list {
+    height: 68vh;
+  }
+}

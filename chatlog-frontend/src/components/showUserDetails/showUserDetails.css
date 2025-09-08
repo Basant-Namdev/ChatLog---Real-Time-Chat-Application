@@ -1,0 +1,45 @@
+.profilePic {
+    border-radius: 50%;
+    width: 13rem;
+    height: 13rem;
+    /* position: absolute; */
+  }
+
+  #user-detail-container {
+    margin-top: 5rem;
+    padding: 2rem;
+  }
+
+  #name {
+    font-size: 2rem;
+    color: white;
+  }
+
+  #btn-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn-s {
+    cursor: pointer;
+    width: 8rem;
+    margin: 1rem;
+    font-size: 1.1rem;
+    border-radius: 0.6rem;
+    padding: .3rem;
+    font-weight: bold;
+    color: white;
+    background: darkslategrey;
+  }
+
+  #sent-btn {
+    width: 8rem;
+    margin: 1rem;
+    font-size: 1.1rem;
+    border-radius: 0.6rem;
+    padding: .3rem;
+    font-weight: bold;
+    background-color: #808080ab;
+    color: black;
+    cursor: not-allowed;
+  }
