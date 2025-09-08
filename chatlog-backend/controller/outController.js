@@ -68,13 +68,21 @@ const generateToken = async (req, res, user, authType) => {
     token: refreshToken,
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   });
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    // secure: process.env.ENVIRONMENT === 'development' ? false : true, // set to true in production
-    // sameSite: "none",
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-  });
+  if (process.env.ENVIRONMENT === 'development') {
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      // secure: process.env.ENVIRONMENT === 'development' ? false : true, // set to true in production
+      // sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+  } else {
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+  }
   return authType !== "google" ? token : res.redirect(`${process.env.FRONTEND_URL}/dashbord`);
 }
 exports.generateToken = generateToken;
