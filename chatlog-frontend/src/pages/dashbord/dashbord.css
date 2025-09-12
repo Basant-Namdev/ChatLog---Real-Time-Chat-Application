@@ -182,6 +182,7 @@ body {
 
 /* dashbord part */
 #menu-cont {
+    overflow: auto;
     padding: 1rem .3rem .1rem .4rem;
     list-style: none;
     margin-top: 4.3rem;

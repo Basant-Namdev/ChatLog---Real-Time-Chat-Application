@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { io } from "socket.io-client";
 import Swal from 'sweetalert2';
 import './dashbord.css';
-import AOS from "aos";
-import "aos/dist/aos.css";
 import UserChats from '../../components/userChats/userChats';
 import Friends from '../../components/friends/friends';
 import AllUsers from '../../components/allUsers/allUsers';
@@ -12,6 +9,7 @@ import Profile from '../../components/profile/profile';
 import ShowUserDetail from '../../components/showUserDetails/showUserDetails';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from "../../contexts/socketContext"
+import ChatBox from '../../components/chatBox/ChatBox';
 
 const Dashbord = () => {
     const { loginUserCx, logout } = useAuth();
@@ -24,28 +22,17 @@ const Dashbord = () => {
     const [chatVisible, setChatVisible] = useState(false);
     const [personalChatShow, setPersonalChatShow] = useState(true);
     const [friends, setFriends] = useState(loginUser?.friends || []);
-    const [messages, setMessages] = useState([]);
-    const [messageInput, setMessageInput] = useState('');
     const [loading, setLoading] = useState('');
     const [currentChatUser, setCurrentChatUser] = useState({ name: '', profile: '', id: '' });
-
     const { token } = useAuth();
     const be_url = import.meta.env.VITE_BE_URL;
-
     const socket = useSocket();
-    const msgScreenRef = useRef(null);
-
-    useEffect(() => {
-            AOS.init({
-                once: true, // animation happens only once
-            });
-        }, []);
-
     const handleUserClick = (id) => {
         setWebPageContent(<ShowUserDetail userId={id} />);
     };
 
     const fetchUser = async () => {
+        setLoading(true);
         try {
             const res = await fetch(`${be_url}/dashbord`, {
                 method: "GET",
@@ -105,31 +92,12 @@ const Dashbord = () => {
             setFriends(prev => prev.filter(friendId => friendId !== id));
         };
 
-        const handleMessage = (msg) => {
-            const time = new Date().toLocaleTimeString('en-IN', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-            });
-
-            const newMessage = {
-                message: msg,
-                time,
-                sender: 'receiver',
-                timestamp: new Date()
-            };
-
-            setMessages(prev => [...prev, newMessage]);
-        };
-
         // Initialize socket connection
         if (socket) {
-
             // Attach all event listeners
             socket.on('friendRequest', handleFriendRequest);
             socket.on('req Accepted ack', handleReqAcceptedAck);
             socket.on('unfriended ack', handleUnfriendedAck);
-            socket.on('message', handleMessage);
         }
 
         // Cleanup
@@ -141,16 +109,8 @@ const Dashbord = () => {
             socket.off('friendRequest', handleFriendRequest);
             socket.off('req Accepted ack', handleReqAcceptedAck);
             socket.off('unfriended ack', handleUnfriendedAck);
-            socket.off('message', handleMessage);
         };
     }, [socket, loginUserCx]);
-
-    useEffect(() => {
-        // Auto-scroll messages to bottom
-        if (msgScreenRef.current) {
-            msgScreenRef.current.scrollTop = msgScreenRef.current.scrollHeight;
-        }
-    }, [messages]);
 
     const loadUserchat = () => {
         setWebPageContent(<UserChats onUserClick={handleUserClick} chat={chat} />);
@@ -216,7 +176,6 @@ const Dashbord = () => {
         }
     }, [chatVisible]);
 
-
     const chat = async (userId, userName, userProfile) => {
         setOpenChat(userId);
         setCurrentChatUser({ name: userName, profile: userProfile, id: userId });
@@ -228,115 +187,7 @@ const Dashbord = () => {
             setWebPageContentShow(false);
             setPersonalChatShow(true);
         }
-
         setChatVisible(true);
-        setMessages([{ message: 'Loading...', sender: 'system', timestamp: new Date() }]);
-
-        // Load chat history
-        try {
-
-            const response = await fetch(`${be_url}/dashbord/loadChat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ recieverId: userId })
-            });
-
-            const data = await response.json();
-            const formattedMessages = [];
-
-            data.forEach((item, index) => {
-                // Add date separator if needed
-                if (index === 0 || item.createdAt.split('T')[0] !== data[index - 1].createdAt.split('T')[0]) {
-                    formattedMessages.push({
-                        message: item.createdAt.split('T')[0],
-                        sender: 'date',
-                        timestamp: new Date(item.createdAt)
-                    });
-                }
-
-                const utcTime = new Date(item.createdAt);
-                const localTimeString = utcTime.toLocaleTimeString('en-IN', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false,
-                });
-
-                formattedMessages.push({
-                    message: item.message,
-                    time: localTimeString,
-                    sender: loginUserCx === item.sender ? 'user' : 'receiver',
-                    timestamp: new Date(item.createdAt)
-                });
-            });
-
-            setMessages(formattedMessages);
-        } catch (error) {
-            console.error('Error loading chat:', error);
-            setMessages([]);
-        }
-    };
-
-    const sendMessage = () => {
-        if (!friends.includes(openChat)) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops!',
-                html: 'You can only chat with users who are your <b>friends</b>.',
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Okay'
-            });
-            return;
-        }
-
-        if (messageInput.trim()) {
-            const time = new Date().toLocaleTimeString('en-IN', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-            });
-
-            const newMessage = {
-                message: messageInput,
-                time: time,
-                sender: 'user',
-                timestamp: new Date()
-            };
-
-            setMessages(prev => [...prev, newMessage]);
-
-            if (socket) {
-                socket.emit('new message', { to: openChat, msg: messageInput });
-            }
-
-            setMessageInput('');
-        }
-    };
-
-    const closeChat = () => {
-        const isMobileOrTab = window.matchMedia("(max-width: 991px)").matches;
-
-        if (isMobileOrTab) {
-            setPersonalChatShow(false);
-            setWebPageContentShow(true);
-        }
-        setChatVisible(false);
-        setOpenChat(null);
-        setMessages([]);
-    };
-
-    const handleFormSubmit = (e) => {
-        e.preventDefault();
-        sendMessage();
-    };
-
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            sendMessage();
-        }
     };
 
     return (
@@ -413,90 +264,7 @@ const Dashbord = () => {
                         <div id="personal-chat-child-1">
                             Click on a chat to start a conversation
                         </div>
-                    ) : (
-                        <div
-                            id="personal-chat-child-2"
-                            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
-                        >
-                            <div id="specific-user">
-                                <img src={currentChatUser.profile} alt="" />
-                                <span>{currentChatUser.name}</span>
-                                <i
-                                    id="cross"
-                                    className="fa-regular fa-circle-xmark"
-                                    onClick={closeChat}
-                                    style={{ cursor: 'pointer' }}
-                                />
-                            </div>
-
-                            <form id="chatCont" onSubmit={handleFormSubmit} style={{ overflow: "auto", flex: 1, display: 'flex', flexDirection: 'column' }}>
-                                <div id="msg-cont" ref={msgScreenRef} style={{ flex: 1, overflowY: 'auto' }}>
-                                    {messages.map((msg, index) => {
-                                        if (msg.sender === 'date') {
-                                            return (
-                                                <div
-                                                    key={index}
-                                                    style={{
-                                                        textAlign: 'center',
-                                                        color: 'white',
-                                                        marginTop: '2px'
-                                                    }}
-                                                >
-                                                    {msg.message}
-                                                </div>
-                                            );
-                                        } else if (msg.sender === 'system') {
-                                            return (
-                                                <p
-                                                    key={index}
-                                                    style={{
-                                                        position: 'absolute',
-                                                        top: '50%',
-                                                        left: '50%',
-                                                        transform: 'translate(-50%, -50%)',
-                                                        color: 'white',
-                                                        fontSize: '2rem',
-                                                        marginRight: '1rem'
-                                                    }}
-                                                >
-                                                    <i className="fa-solid fa-spinner fa-spin-pulse"></i>
-                                                </p>
-                                            );
-                                        } else {
-                                            const isUser = msg.sender === 'user';
-                                            return (
-                                                <div
-                                                    key={index}
-                                                    className={isUser ? 'user-msg-cont' : 'reciever-msg-cont'}
-                                                >
-                                                    <span className={isUser ? 'user-msg' : 'reciever-msg'}>
-                                                        {msg.message}
-                                                        <sub style={{ fontSize: '11px', marginLeft: '.6rem' }}>
-                                                            {msg.time}
-                                                        </sub>
-                                                    </span>
-                                                </div>
-                                            );
-                                        }
-                                    })}
-                                </div>
-
-                                <div style={{ display: 'flex' }}>
-                                    <input
-                                        type="text"
-                                        name="message"
-                                        id="msg"
-                                        placeholder="Enter your message here"
-                                        autoComplete="off"
-                                        value={messageInput}
-                                        onChange={(e) => setMessageInput(e.target.value)}
-                                        onKeyPress={handleKeyPress}
-                                    />
-                                    <button id="send" type="submit">Send</button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
+                    ) : (<ChatBox currentChatUser={currentChatUser} setPersonalChatShow={setPersonalChatShow} setWebPageContentShow={setWebPageContentShow} setChatVisible={setChatVisible} setOpenChat={setOpenChat} friends={friends}/>)}
                 </div>
             )}
 

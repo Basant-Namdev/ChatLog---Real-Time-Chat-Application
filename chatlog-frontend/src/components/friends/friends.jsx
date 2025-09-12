@@ -74,17 +74,21 @@ const Friends = ({ onUserClick, chat, setFriendReqCount, friendReqCount, }) => {
     };
 
     // --- attach listeners ---
-    socket.on("req Acceptance failure", handleReqAcceptanceFailureFR);
-    socket.on("friendRequest", handleFriendRequest);
-    socket.on("req Accepted ack", handleReqAccepted);
-    socket.on("unfriended ack", handleUnfriendedAckFR);
+    if (socket) {
+      socket.on("req Acceptance failure", handleReqAcceptanceFailureFR);
+      socket.on("friendRequest", handleFriendRequest);
+      socket.on("req Accepted ack", handleReqAccepted);
+      socket.on("unfriended ack", handleUnfriendedAckFR);
+    }
 
     // --- cleanup ---
     return () => {
-      socket.off("req Acceptance failure", handleReqAcceptanceFailureFR);
-      socket.off("friendRequest", handleFriendRequest);
-      socket.off("req Accepted ack", handleReqAccepted);
-      socket.off("unfriended ack", handleUnfriendedAckFR);
+      if (socket) {
+        socket.off("req Acceptance failure", handleReqAcceptanceFailureFR);
+        socket.off("friendRequest", handleFriendRequest);
+        socket.off("req Accepted ack", handleReqAccepted);
+        socket.off("unfriended ack", handleUnfriendedAckFR);
+      }
     };
   }, [socket]);
 
