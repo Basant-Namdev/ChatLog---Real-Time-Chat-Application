@@ -8,7 +8,8 @@ export default defineConfig({
       "chatlog-real-time-chat-application.onrender.com"
     ],
     host: true,
-    port: process.env.PORT || 4173
+    port: process.env.PORT || 4173,
+    plugins: [react()],
   }
 });
 
